@@ -77,7 +77,7 @@ The matrix below uses the *anchor* documents of each phase as the row keys. Sub-
 | NX-PRD-0004 | Onboarding | NX-PRD-0007 | NX-FEAT-1100 | NX-UI-6101..6106 | NX-ARCH-0201 | NX-AT-9601 | NX-EM-9608 (Frontend AI) | 🟢 |
 | NX-PRD-0005 | Subscription Model | NX-PRD-0007 | NX-FEAT-1500 | NX-DS-5008 | NX-API-8001 | NX-AT-9601 | NX-EM-9614 (Finance AI) | 🟢 |
 | NX-PRD-0006 | H1 Roadmap | — | NX-FEAT-0001..0002 | — | — | — | NX-EM-9609 (Product AI) | 🟡 |
-| NX-PRD-0007 | Target Audiences & Personas | (root) | NX-FEAT-0001 | — | — | NX-AT-9601 | NX-EM-9607 (Marketing AI) | 🟠 (orphan — no on-disk document yet) |
+| NX-PRD-0007 | Target Audiences & Personas | (root) | NX-FEAT-0001 | — | — | NX-AT-9601 | NX-EM-9607 (Marketing AI) | 🟢 (identity-mapped to `NX-DOC-0007`) |
 | NX-PRD-0008 | **Requirements Traceability Matrix** (this doc) | (root) | — | — | — | — | NX-EM-9601 (Product AI) | 🟢 |
 
 ### 5.2 Phase 3 — UX / Design
@@ -139,9 +139,9 @@ The statuses used are:
 
 | Gap | Type | Suggested fix |
 |-----|------|---------------|
-| `NX-PRD-0007` referenced in 3 manifests but no document on disk | 🟠 Orphan | Create `01_PRODUCT/07_Target_Audiences_and_Personas.md` (move from `00_EXECUTIVE/07_…` per `Marketing_AI/07_Marketing_AI_Manifest.md` line 114 note) |
+| `NX-PRD-0007` referenced in 3 manifests, no doc on disk | ✅ **Resolved 2026-07-03** | Created `01_PRODUCT/08_Target_Audiences_and_Personas.md` as an identity-mapped redirect to `NX-DOC-0007`. The three engineering manifests now resolve via the new file. |
 | `NX-FEAT-2201-2209`, `NX-FEAT-2101-2110` (referenced as ranges) | 🟡 Partial | Resolve into explicit per-ID rows in the next registry pass |
-| 411 `NX-*` references in prose are not in `_assets/DOCUMENT_REGISTRY.md` | 🟡 Partial | Run a registry pass; flip `registry-consistency` CI to strict after the count drops below ~10 |
+| 404 `NX-*` references in prose are not in `_assets/DOCUMENT_REGISTRY.md` | 🟡 Partial | Run a registry pass; flip `registry-consistency` CI to strict after the count drops below ~10 |
 | `NX-DS-5099`, `NX-DS-5199`, `NX-DS-5299`, `NX-DS-5399` etc. — "end-of-range" markers | 🟡 Partial | Document the range-marker convention explicitly in `00_EXECUTIVE/01_Cover_and_Document_Control.md` §3 |
 | Phase 7 Backend `NX-ARCH-####` IDs not yet assigned | 🟠 Orphan | Reserved in `00_EXECUTIVE/01_Cover_and_Document_Control.md` §3 (range `0001–0999`); the `07_BACKEND/` docs use `NX-ARCH-` IDs already — confirm they are in the range and register them |
 

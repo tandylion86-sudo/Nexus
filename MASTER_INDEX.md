@@ -36,7 +36,7 @@ Phase 2 establishes **what NEXUS must do** for users. It decomposes the vision i
 | 5 | NX-PRD-0004 | [Onboarding](01_PRODUCT/04_Onboarding.md) | First-run, activation, education |
 | 6 | NX-PRD-0005 | [Subscription Model](01_PRODUCT/05_Subscription_Model.md) | Tiers, billing, overages |
 | 7 | NX-PRD-0006 | [H1 Roadmap](01_PRODUCT/06_Roadmap.md) | Quarterly milestones |
-| 7a | NX-PRD-0007 | Target Audiences & Personas | Referenced by 3 engineering manifests — document pending (see `01_PRODUCT/07_Requirements_Traceability_Matrix.md` §7) |
+| 7a | NX-PRD-0007 | [Target Audiences & Personas](01_PRODUCT/08_Target_Audiences_and_Personas.md) | Identity-mapped to `NX-DOC-0007` — see also `00_EXECUTIVE/07_Target_Audiences_and_Personas.md` |
 | 7b | NX-PRD-0008 | [Requirements Traceability Matrix](01_PRODUCT/07_Requirements_Traceability_Matrix.md) | Single source of truth for requirement → design → implementation → test links |
 | 8 | NX-FEAT-1100 | [Workspace Anchor](01_PRODUCT/Feature_Specifications/01_Workspace.md) | Anchor spec |
 | 9 | NX-FEAT-1600 | [Cloud Browser Fleet Anchor](01_PRODUCT/Feature_Specifications/02_Cloud_Browser_Fleet.md) | Anchor spec |

@@ -99,7 +99,7 @@
 | NX-PRD-0004 | Onboarding | 2 | 🟢 Complete | `01_PRODUCT/04_Onboarding.md` | 2026-06-30 |
 | NX-PRD-0005 | Subscription Model | 2 | 🟢 Complete | `01_PRODUCT/05_Subscription_Model.md` | 2026-06-30 |
 | NX-PRD-0006 | H1 Roadmap | 2 | 🟢 Complete | `01_PRODUCT/06_Roadmap.md` | 2026-06-30 |
-| NX-PRD-0007 | Target Audiences & Personas | 2 | 🟠 Orphan — referenced by 3 manifests, no on-disk document | _(no path — pending)_ | 2026-07-03 |
+| NX-PRD-0007 | Target Audiences & Personas | 2 | 🟢 Complete (identity-mapped to `NX-DOC-0007`) | `01_PRODUCT/08_Target_Audiences_and_Personas.md` | 2026-07-03 |
 | NX-PRD-0008 | Requirements Traceability Matrix | 2 | 🟡 Initial scaffold | `01_PRODUCT/07_Requirements_Traceability_Matrix.md` | 2026-07-03 |
 
 ## Engineering Manifests — `NX-EM-` (9601–9699)
