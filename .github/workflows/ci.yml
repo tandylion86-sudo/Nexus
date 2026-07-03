@@ -100,8 +100,15 @@ jobs:
               gsub(/^ +| +$/, "", $6);
               gsub(/^`+|`+$/, "", $6);
               if ($2 != "" && $6 != "" && $6 !~ /^-/) {
-                print $2 > "'"$tmp"'/ids.txt"
-                print $6 > "'"$tmp"'/paths.txt"
+                # Rows whose Path starts with `_(` are explicit "no path" markers
+                # (e.g. an orphan that's been declared in the registry but not yet authored).
+                # Emit a sentinel ID with no path so the missing-path check skips it.
+                if ($6 ~ /^_\(/) {
+                  print $2 > "'"$tmp"'/ids.txt"
+                } else {
+                  print $2 > "'"$tmp"'/ids.txt"
+                  print $6 > "'"$tmp"'/paths.txt"
+                }
               }
             }' "$REG"
 

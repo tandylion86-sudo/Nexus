@@ -89,6 +89,19 @@
 | NX-ARCH-0501 | Master Workflow Prompts | 10 | 🟢 Complete | `99_MASTER_PROMPTS/Workflows/01_Master_Workflows.md` | 2026-07-03 |
 | NX-ARCH-0502 | Diagram Library & Conventions | 10 | 🟢 Complete | `99_MASTER_PROMPTS/Diagrams/02_Diagram_Library.md` | 2026-07-03 |
 
+## Product Requirements — `NX-PRD-` (0100–0999)
+
+| Doc ID | Title | Phase | Status | Path | Created |
+|--------|-------|-------|--------|------|---------|
+| NX-PRD-0001 | Master PRD | 2 | 🟢 Complete | `01_PRODUCT/00_Master_PRD.md` | 2026-06-30 |
+| NX-PRD-0002 | Persona × Feature Matrix | 2 | 🟢 Complete | `01_PRODUCT/02_Persona_Feature_Matrix.md` | 2026-06-30 |
+| NX-PRD-0003 | User Journeys | 2 | 🟢 Complete | `01_PRODUCT/03_User_Journeys.md` | 2026-06-30 |
+| NX-PRD-0004 | Onboarding | 2 | 🟢 Complete | `01_PRODUCT/04_Onboarding.md` | 2026-06-30 |
+| NX-PRD-0005 | Subscription Model | 2 | 🟢 Complete | `01_PRODUCT/05_Subscription_Model.md` | 2026-06-30 |
+| NX-PRD-0006 | H1 Roadmap | 2 | 🟢 Complete | `01_PRODUCT/06_Roadmap.md` | 2026-06-30 |
+| NX-PRD-0007 | Target Audiences & Personas | 2 | 🟠 Orphan — referenced by 3 manifests, no on-disk document | _(no path — pending)_ | 2026-07-03 |
+| NX-PRD-0008 | Requirements Traceability Matrix | 2 | 🟡 Initial scaffold | `01_PRODUCT/07_Requirements_Traceability_Matrix.md` | 2026-07-03 |
+
 ## Engineering Manifests — `NX-EM-` (9601–9699)
 
 See `_assets/PROGRESS.md` for the full list of 14 role manifests (NX-EM-9601..9614).
