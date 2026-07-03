@@ -10,58 +10,133 @@ permissions:
   contents: read
 
 jobs:
+  # ---- 1. Markdown link check -------------------------------------------------
   markdown-link-check:
     name: Markdown link check
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Link Checker (lychee)
         uses: lycheeverse/lychee-action@v2
         with:
-          args: --root-dir . --no-progress --exclude-loopback --exclude-mail --exclude 'https://github.com/tandylion86-sudo/Nexus/blob/.*#.*' .
+          args: --root-dir . --no-progress --exclude-loopback --exclude-mail .
           failLevel: warn
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  # ---- 2. Required top-level entries -----------------------------------------
   structure-check:
     name: Required top-level entries
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
+      - uses: actions/checkout@v4
       - name: Verify canonical directories exist
         run: |
           set -euo pipefail
           for d in \
-            00_EXECUTIVE \
-            01_PRODUCT \
-            02_DESIGN_SYSTEM \
-            03_UI_SCREENS \
-            04_BROWSER_ENGINE \
-            05_AI_PLATFORM \
-            06_ENGINEERING_TEAM \
-            07_BACKEND \
-            08_SECURITY \
-            09_MARKETPLACE \
-            10_DEPLOYMENT \
-            11_BUSINESS \
-            12_DEVELOPER_GUIDE \
-            99_MASTER_PROMPTS \
-            _assets; do
-            if [ ! -d "$d" ]; then
-              echo "::error::Missing required directory: $d"
-              exit 1
-            fi
+            00_EXECUTIVE 01_PRODUCT 02_DESIGN_SYSTEM 03_UI_SCREENS \
+            04_BROWSER_ENGINE 05_AI_PLATFORM 06_ENGINEERING_TEAM \
+            07_BACKEND 08_SECURITY 09_MARKETPLACE 10_DEPLOYMENT \
+            11_BUSINESS 12_DEVELOPER_GUIDE 99_MASTER_PROMPTS _assets; do
+            [ -d "$d" ] || { echo "::error::Missing required directory: $d"; exit 1; }
           done
           for f in README.md MASTER_INDEX.md LICENSE; do
-            if [ ! -f "$f" ]; then
-              echo "::error::Missing required file: $f"
-              exit 1
-            fi
+            [ -f "$f" ] || { echo "::error::Missing required file: $f"; exit 1; }
           done
           echo "All required entries present."
+
+  # ---- 3. Mermaid block syntax (fence balance, no orphan mermaid) ------------
+  mermaid-syntax:
+    name: Mermaid block syntax
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check mermaid fences are balanced
+        run: |
+          set -euo pipefail
+          bad=0
+          while IFS= read -r -d '' f; do
+            if ! awk '
+              /^```mermaid[[:space:]]*$/ { open++; next }
+              /^```[[:space:]]*$/ { if (open>0) open--; next }
+              END { exit (open==0 ? 0 : 1) }
+            ' "$f"; then
+              echo "::error::$f has unclosed mermaid block(s)"
+              bad=$((bad+1))
+            fi
+          done < <(find . -type f -name '*.md' -print0)
+          [ "$bad" -eq 0 ] || { echo "::error::$bad file(s) failed"; exit 1; }
+          echo "All mermaid blocks are well-formed."
+
+  # ---- 4. Document registry consistency (ADVISORY) ---------------------------
+  # Flags:
+  #   - registered IDs whose Path does not exist on disk
+  #   - NX-* IDs referenced anywhere in *.md that are not in the registry
+  # Not blocking: the blueprint was authored in passes and many NX-AGENT/FEAT/etc.
+  # IDs are not yet registered. Once the registry is the source of truth, flip
+  # continue-on-error to false.
+  registry-consistency:
+    name: Document registry consistency (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check registry paths and references
+        run: |
+          set -euo pipefail
+          REG="_assets/DOCUMENT_REGISTRY.md"
+          [ -f "$REG" ] || { echo "::warning::Registry $REG not found, skipping"; exit 0; }
+
+          # Extract registered IDs and paths as two parallel files
+          tmp=$(mktemp -d)
+          trap 'rm -rf "$tmp"' EXIT
+          awk -F'|' '
+            /^\| NX-[A-Z]+-[0-9]+ +\|/ {
+              gsub(/^ +| +$/, "", $2);
+              gsub(/^ +| +$/, "", $6);
+              gsub(/^`+|`+$/, "", $6);
+              if ($2 != "" && $6 != "" && $6 !~ /^-/) {
+                print $2 > "'"$tmp"'/ids.txt"
+                print $6 > "'"$tmp"'/paths.txt"
+              }
+            }' "$REG"
+
+          reg_count=$(wc -l < "$tmp/ids.txt" | tr -d ' ')
+          echo "Registry has $reg_count registered entries."
+
+          echo
+          echo "::group::Registered paths that do not exist on disk"
+          missing_paths=0
+          while IFS= read -r p; do
+            [ -n "$p" ] || continue
+            if [ ! -e "$p" ]; then
+              echo "MISSING-PATH: $p"
+              missing_paths=$((missing_paths+1))
+            fi
+          done < "$tmp/paths.txt"
+          echo "::endgroup::"
+
+          echo
+          echo "::group::NX-* references not present in the registry"
+          unreg_count=0
+          # All unique NX-* IDs referenced in any markdown
+          grep -rhoE 'NX-[A-Z]+-[0-9]{4}' --include='*.md' . \
+            | sort -u > "$tmp/refs.txt"
+          # Ensure both files are sorted for comm (refs already are; ids is
+          # in registry order which is also sorted by ID, but be defensive)
+          LC_ALL=C sort -o "$tmp/ids.txt" "$tmp/ids.txt"
+          # Subtract registered IDs
+          comm -23 "$tmp/refs.txt" "$tmp/ids.txt" > "$tmp/unreg.txt"
+          unreg_count=$(wc -l < "$tmp/unreg.txt" | tr -d ' ')
+          if [ "$unreg_count" -gt 0 ]; then
+            cat "$tmp/unreg.txt" | sed 's/^/UNREGISTERED-REF: /'
+          fi
+          echo "::endgroup::"
+
+          echo
+          echo "Summary: $missing_paths missing path(s), $unreg_count unregistered reference(s)"
+          echo "(This job is advisory and will not fail the build.)"
