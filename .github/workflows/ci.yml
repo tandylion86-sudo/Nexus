@@ -1,0 +1,67 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  markdown-link-check:
+    name: Markdown link check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Link Checker (lychee)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: --root-dir . --no-progress --exclude-loopback --exclude-mail --exclude 'https://github.com/tandylion86-sudo/Nexus/blob/.*#.*' .
+          failLevel: warn
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  structure-check:
+    name: Required top-level entries
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify canonical directories exist
+        run: |
+          set -euo pipefail
+          for d in \
+            00_EXECUTIVE \
+            01_PRODUCT \
+            02_DESIGN_SYSTEM \
+            03_UI_SCREENS \
+            04_BROWSER_ENGINE \
+            05_AI_PLATFORM \
+            06_ENGINEERING_TEAM \
+            07_BACKEND \
+            08_SECURITY \
+            09_MARKETPLACE \
+            10_DEPLOYMENT \
+            11_BUSINESS \
+            12_DEVELOPER_GUIDE \
+            99_MASTER_PROMPTS \
+            _assets; do
+            if [ ! -d "$d" ]; then
+              echo "::error::Missing required directory: $d"
+              exit 1
+            fi
+          done
+          for f in README.md MASTER_INDEX.md LICENSE; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Missing required file: $f"
+              exit 1
+            fi
+          done
+          echo "All required entries present."
